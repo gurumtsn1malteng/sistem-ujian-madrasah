@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian Online Sekolah</title>
+    <style>
+        body { margin: 0; padding: 0; font-family: sans-serif; overflow: hidden; }
+        /* Tampilan Peringatan (Awalnya disembunyikan) */
+        #warning-msg {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ff4444; color: white; text-align: center;
+            padding-top: 20%; font-size: 24px; z-index: 9999;
+        }
+        /* Tampilan Error jika link salah */
+        #error-msg {
+            display: none; text-align: center; margin-top: 50px; color: red;
+        }
+        /* Frame Google Form */
+        iframe { width: 100%; height: 100vh; border: none; }
+    </style>
+</head>
+<body>
+
+    <div id="warning-msg">
+        <h1>PELANGGARAN TERDETEKSI!</h1>
+        <p>Anda meninggalkan halaman ujian atau membuka aplikasi lain.</p>
+        <p>Silakan <b>Refresh/Muat Ulang</b> halaman ini untuk kembali.</p>
+        <p><small>(Kejadian ini dapat menghapus jawaban yang belum tersimpan)</small></p>
+    </div>
+
+    <div id="error-msg">
+        <h2>Soal Tidak Ditemukan</h2>
+        <p>Link yang Anda gunakan tidak lengkap.</p>
+        <p>Pastikan link mengandung "?id=..."</p>
+    </div>
+
+    <iframe id="exam-frame"></iframe>
+
+    <script>
+        // --- LOGIKA PROGRAM ---
+
+        // A. Ambil ID dari Link (URL)
+        const urlParams = new URLSearchParams(window.location.search);
+        const formID = urlParams.get('id');
+
+        // B. Cek apakah ID ada?
+        if (formID) {
+            // Jika ada, masukkan ke dalam iframe
+            const fullLink = "https://docs.google.com/forms/d/e/" + formID + "/viewform?embedded=true";
+            document.getElementById("exam-frame").src = fullLink;
+        } else {
+            // Jika tidak ada, tampilkan pesan error
+            document.getElementById("exam-frame").style.display = "none";
+            document.getElementById("error-msg").style.display = "block";
+        }
+
+        // C. Deteksi Kecurangan (Visibility Change)
+        document.addEventListener("visibilitychange", function() {
+            if (document.hidden) {
+                // Sembunyikan form, tampilkan layar merah
+                document.getElementById("exam-frame").style.display = "none";
+                document.getElementById("warning-msg").style.display = "block";
+                document.title = "PELANGGARAN!";
+            }
+        });
+    </script>
+
+</body>
+</html>
